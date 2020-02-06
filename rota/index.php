@@ -1,7 +1,7 @@
 <?php
 date_default_timezone_set('America/Sao_Paulo');
 include 'conexao.php';
-$nome = 'Matheus Ricardo Brunelli';
+include 'modal.php';
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -18,7 +18,11 @@ $nome = 'Matheus Ricardo Brunelli';
 <body>
 
     <div class="container mt-5">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal" onclick="abreModal('<?= $nome ?>')">
+        <label for="campo">Mensagem</label>
+        <textarea id="campo" cols="5" rows="5" class="form-control w-50" placeholder="Digite sua mensagem..."></textarea>
+        <button type="button" class="btn btn-success" id="botao" onclick="submit()">Enviar</button>
+
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal" onclick="abreModal(mensagem())">
             Modal
         </button>
     </div>
@@ -32,22 +36,51 @@ $nome = 'Matheus Ricardo Brunelli';
     <script>
         function abreModal(conteudo) {
             $.ajax({
-                // SE EU TIVER MAIS DE UM MODAL EU PRECISO PASSAR UM GET NA URL 
-                url: 'modal.php?acao=texto',
+                // SE EU TIVER MAIS DE UM MODAL EU PRECISO PASSAR UM GET NA URL MODAL.PHP?ACAO=TEXTO
+                url: 'modal.php',
                 type: 'post',
                 data: {
                     conteudo,
+                    'nome': 'Matheus Ricardo Brunelli',
                     'idade': 19
                 },
                 // CALL BACK 
                 success: function(result) {
                     console.log(result, conteudo)
-                    $(result).modal('show')
+                    $('#conteudo').html(conteudo)
+                    $('#modal').modal('show')
+                    $('#titulo').html('nome')
                 },
                 error: function(result) {
-                    console.log(result.status)
+                    console.log(result, conteudo)
                 }
             })
+        }
+
+        toastr.options = {
+            'closeButton': true,
+            'progressBar': true,
+            'timeOut': 5000
+        }
+
+        function sucesso() {
+            $('#modal').modal('hide')
+            toastr.success('Configurações salvas com sucesso!')
+        }
+
+        function cancela() {
+            $('#modal').modal('hide')
+            toastr.error('Operação cancelada!')
+        }
+
+        function mensagem() {
+            let txt = document.querySelector('textarea#campo').value
+            return txt
+        }
+
+        function submit() {
+            let campo = document.querySelector('textarea#campo').value
+            toastr.info(campo, 'Mensagem enviada!')
         }
     </script>
 
